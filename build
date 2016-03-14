@@ -1,0 +1,1 @@
+nvcc -shared -Xcompiler -fPIC -o libgpcuda.so gpcuda.cu
