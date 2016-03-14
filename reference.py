@@ -87,6 +87,15 @@ class GPRegression(object):
         residual = post_mean - test_y
         return residual
 
+    # from an-astronomers-introduction-to-gaussian-processes
+    def loglikelihood(x, y, yerr, a, s):
+        r = x[:,None] - x[None,:]
+        C = np.diag(yerr**2) + a*np.exp(-0.5*r**2/(s*s))
+        factor, flag = cho_factor(C)
+        logdet = np.sum(2*np.log(np.diag(factor)))
+        return -0.5 * (np.dot(y, cho_solve((factor, flag), y))
+                       + logdet + len(x)*np.log(2*np.pi))
+
 def linear_kernel(x,y,c,m):
     return m*m*(x-c)*(y-c)
 
@@ -98,3 +107,4 @@ def inverse_r_kernel(x,y,c,m):
 
 def inverse_r_times_se_kernel(x,y,c,l, m):
     return m*m*((1./x-c)*(1./y-c) * np.exp(-(x-y)**2/l**2))
+
